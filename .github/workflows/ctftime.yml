@@ -13,7 +13,7 @@ jobs:
 
             - name: get info via ctftime api
               run: |
-               START=$(date -u %s);
+               START=$(date -u +%s);
                END=$(date -u +%s -d "+7 days");
                curl -s https://ctftime.org/api/v1/events/?limit=10&start=$START&end=$END" |jq > out.txt; 
               shell: bash
