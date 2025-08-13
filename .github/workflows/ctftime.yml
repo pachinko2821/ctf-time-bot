@@ -39,6 +39,7 @@ jobs:
                 done
 
                 # Send as one message with Markdown table
+                TABLE=$(echo $TABLE|xxd -c 1 -p |sed 's/^/\\u00/g'|tr --delete '\n')
                 PAYLOAD=$(jq -n --arg content "Here are upcoming CTFs:\n\`\`\`md\n$TABLE\n\`\`\`" '{content: $content}');
 
                 curl "$DISCORD_WEBHOOK_URL" \
