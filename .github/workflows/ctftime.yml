@@ -35,7 +35,7 @@ jobs:
                     WEIGHT=$(cat out.txt|jq -r ".[$i].weight");
                     FORMAT=$(cat out.txt|jq -r ".[$i].format");
 
-                    if [[ $(echo "$WEIGHT" > 0|bc -l) ]]; then
+                    if [[ $(echo "$WEIGHT > 0" |bc -l) ]]; then
                       TABLE="$TABLE\n| $TITLE | $WEIGHT | $START_TIME | $URL | $FORMAT";
                     fi
                 done
