@@ -32,8 +32,8 @@ jobs:
                     TITLE=$(cat out.txt|jq -r ".[$i].title"|xxd -c 1 -p |sed 's/^/\\u00/g'|tr --delete '\n');
                     START_TIME=$(cat out.txt|jq -r ".[$i].start");
                     URL=$(cat out.txt|jq -r ".[$i].ctftime_url");
-                    WEIGHT=$(cat out.txt|jq -r ".[$i].weight);
-                    FORMAT=$(cat out.txt|jq -r ".[$i].format);
+                    WEIGHT=$(cat out.txt|jq -r ".[$i].weight");
+                    FORMAT=$(cat out.txt|jq -r ".[$i].format");
 
                     TABLE="$TABLE\n| $TITLE | $WEIGHT | $START_TIME | $URL | $FORMAT";
                 done
