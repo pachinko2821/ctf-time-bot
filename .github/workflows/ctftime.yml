@@ -9,7 +9,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: install jq
-              run: apt update && apt install jq -y;
+              run: sudo apt update && sudo apt install jq -y;
 
             - name: get info via ctftime api
               run: |
