@@ -42,7 +42,7 @@ jobs:
 
                 # Send as one message with Markdown table
                 TABLE=$(echo $TABLE)
-                PAYLOAD=$(jq -n --arg content "Here are upcoming CTFs:\n\`\`\`md\n$TABLE\n\`\`\`" '{content: $content}');
+                PAYLOAD=$(jq -n --arg content "Here are upcoming CTFs:\\n\`\`\`\\n$TABLE\\n\`\`\`" '{content: $content}');
 
                 curl "$DISCORD_WEBHOOK_URL" \
                   -H "Content-Type: application/json" \
