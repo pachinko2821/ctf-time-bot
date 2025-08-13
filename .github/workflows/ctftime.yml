@@ -15,7 +15,8 @@ jobs:
               run: |
                START=$(date -u +%s);
                END=$(date -u +%s -d "+7 days");
-               curl -s "https://ctftime.org/api/v1/events/?limit=10&start=$START&end=$END" |jq > out.txt; 
+               curl -s "https://ctftime.org/api/v1/events/?limit=10&start=$START&end=$END" |jq > out.txt;
+               cat out.txt; 
               shell: bash
 
             - name: send message via discord webhook
