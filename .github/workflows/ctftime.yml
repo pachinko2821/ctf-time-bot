@@ -37,6 +37,7 @@ jobs:
 
                     if [[ $(echo "$WEIGHT" > 0|bc -l) ]]; then
                       TABLE="$TABLE\n| $TITLE | $WEIGHT | $START_TIME | $URL | $FORMAT";
+                    fi
                 done
 
                 # Send as one message with Markdown table
