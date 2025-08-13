@@ -32,21 +32,20 @@ jobs:
                 URL=$(cat out.txt|jq -r ".[$i].ctftime_url");
                 IMG_URL=$(cat out.txt|jq -r ".[$i].logo");
                 START_TIME=$(cat out.txt|jq -r ".[$i].start");
-                echo "$TITLE" "$URL" "$START_TIME";
                 curl "$DISCORD_WEBHOOK_URL" \
                   -H 'Content-Type: application/json' \
-                  -d '{
-                        "embeds": [
+                  -d "{
+                  \"embeds\": [
                           {
-                            "title": "$TITLE",
-                            "description": "$DESCRIPTION",
-                            "url": "$URL",
-                            "color": 7419530,
-                            "image": {
-                              "url": "$IMG_URL"
+                            \"title\": \"$TITLE\",
+                            \"description\": \"$DESCRIPTION\",
+                            \"url\": \"$URL\",
+                            \"color\": 7419530,
+                            \"image\": {
+                              \"url\": \"$IMG_URL\"
                             },
-                            "timestamp": "$START_TIME"
+                            \"timestamp\": \"$START_TIME\"
                           }
                         ]
-                      }';
+                      }";
                done;
