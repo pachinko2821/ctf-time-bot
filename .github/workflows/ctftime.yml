@@ -19,6 +19,7 @@ jobs:
               shell: bash
 
             - name: send message via discord webhook
+              shell: bash
               env:
                 DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
               run: |
@@ -49,4 +50,3 @@ jobs:
                         ]
                       }';
                done;
-              shell: bash
