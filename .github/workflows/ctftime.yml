@@ -27,11 +27,11 @@ jobs:
                LENGTH=$(expr $LENGTH - 1);
                for i in $(seq 0 $LENGTH);
                do
-                TITLE=$(cat out.txt|jq -r '.[$i].title');
-                DESCRIPTION=$(cat out.txt|jq -r '.[$i].description');
-                URL=$(cat out.txt|jq -r '.[$i].ctftime_url');
-                IMG_URL=$(cat out.txt|jq -r '.[$i].logo');
-                $START_TIME=$(cat out.txt|jq -r '.[$i].start')
+                TITLE=$(cat out.txt|jq -r ".[$i].title");
+                DESCRIPTION=$(cat out.txt|jq -r ".[$i].description");
+                URL=$(cat out.txt|jq -r ".[$i].ctftime_url");
+                IMG_URL=$(cat out.txt|jq -r ".[$i].logo");
+                $START_TIME=$(cat out.txt|jq -r ".[$i].start")
                 curl "$env:DISCORD_WEBHOOK_URL" \
                   -H 'Content-Type: application/json' \
                   -d '{
