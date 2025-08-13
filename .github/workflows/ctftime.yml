@@ -8,9 +8,14 @@ jobs:
     ctf-time-to-discord:
         runs-on: ubuntu-latest
         steps:
+            - name: install jq
+              run: apt update && apt install jq -y;
+
             - name: get info via ctftime api
               run: |
-               curl https://ctftime.org/api/v1/events/?limit=10 -O out.txt; 
+               START=$(date -u %s);
+               END=$(date -u +%s -d "+7 days");
+               curl -s https://ctftime.org/api/v1/events/?limit=10&start=$START&end=$END" |jq > out.txt; 
               shell: bash
 
             - name: send message via discord webhook
