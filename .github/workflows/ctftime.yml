@@ -29,7 +29,7 @@ jobs:
                 TABLE="| Title | Weight | Start Time | URL | Format |\n|---|---|---|---|---|";
 
                 for i in $(seq 0 $LENGTH); do
-                    TITLE=$(cat out.txt|jq -r ".[$i].title"|xxd -c 1 -p |sed 's/^/\\u00/g'|tr --delete '\n');
+                    TITLE=$(cat out.txt|jq -r ".[$i].title");
                     START_TIME=$(cat out.txt|jq -r ".[$i].start");
                     URL=$(cat out.txt|jq -r ".[$i].ctftime_url");
                     WEIGHT=$(cat out.txt|jq -r ".[$i].weight");
@@ -42,7 +42,7 @@ jobs:
 
                 # Send as one message with Markdown table
                 TABLE=$(echo $TABLE)
-                PAYLOAD=$(jq -n --arg content "Here are upcoming CTFs:\\n\`\`\`\\n$TABLE\\n\`\`\`" '{content: $content}');
+                PAYLOAD=$(jq -n --arg content "\`\`\`\\n$TABLE\`\`\`" '{content: $content}');
 
                 curl "$DISCORD_WEBHOOK_URL" \
                   -H "Content-Type: application/json" \
