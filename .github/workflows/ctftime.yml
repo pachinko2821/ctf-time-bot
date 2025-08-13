@@ -1,0 +1,45 @@
+name: 'CTF Time'
+on: 
+  workflow_dispatch:
+  schedule:
+    - cron: "30 17 * * 5"
+
+jobs:
+    ctf-time-to-discord:
+        runs-on: ubuntu-latest
+        steps:
+            - name: get info via ctftime api
+              run: |
+               curl https://ctftime.org/api/v1/events/?limit=10 -O out.txt; 
+              shell: bash
+
+            - name: send message via discord webhook
+              env:
+                DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+              run: |
+               LENGTH=$(cat out.txt|jq length);
+               for i in $(seq 0 $LENGTH);
+               do
+                TITLE=$(cat out.txt|jq -r '.[$i].title');
+                DESCRIPTION=$(cat out.txt|jq -r '.[$i].description');
+                URL=$(cat out.txt|jq -r '.[$i].ctftime_url');
+                IMG_URL=$(cat out.txt|jq -r '.[$i].logo');
+                $START_TIME=$(cat out.txt|jq -r '.[$i].start')
+                curl "$env:DISCORD_WEBHOOK_URL" \
+                  -H 'Content-Type: application/json' \
+                  -d '{
+                        "embeds": [
+                          {
+                            "title": "$TITLE",
+                            "description": "$DESCRIPTION",
+                            "url": "$URL",
+                            "color": 7419530,
+                            "image": {
+                              "url": "$IMG_URL"
+                            },
+                            "timestamp": "$START_TIME"
+                          }
+                        ]
+                      }'
+               done
+              shell: bash
