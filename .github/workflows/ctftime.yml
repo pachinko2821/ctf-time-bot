@@ -30,7 +30,7 @@ jobs:
                 DESCRIPTION=$(cat out.txt|jq -r ".[$i].description");
                 URL=$(cat out.txt|jq -r ".[$i].ctftime_url");
                 IMG_URL=$(cat out.txt|jq -r ".[$i].logo");
-                $START_TIME=$(cat out.txt|jq -r ".[$i].start");
+                START_TIME=$(cat out.txt|jq -r ".[$i].start");
                 echo "$TITLE" "$URL" "$START_TIME";
                 curl "$env:DISCORD_WEBHOOK_URL" \
                   -H 'Content-Type: application/json' \
