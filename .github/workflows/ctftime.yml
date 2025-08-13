@@ -21,7 +21,6 @@ jobs:
             - name: send message via discord webhook
               shell: bash
               run: |
-               echo "VARS: ${{ secrets.DISCORD_WEBHOOK_URL }}" "ENV: ${{ env.DISCORD_WEBHOOK_URL }}"
                LENGTH=$(cat out.txt|jq length);
                LENGTH=$(expr $LENGTH - 1);
                for i in $(seq 0 $LENGTH);
