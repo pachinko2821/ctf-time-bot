@@ -23,14 +23,24 @@ jobs:
               env:
                 DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
               run: |
-               LENGTH=$(cat out.txt|jq length);
-               LENGTH=$(expr $LENGTH - 1);
-               for i in $(seq 0 $LENGTH);
-               do
-                TITLE=$(cat out.txt|jq -r ".[$i].title"|xxd -c 1 -p |sed 's/^/\\u00/g'|tr --delete '\n');
-                DESCRIPTION=$(cat out.txt|jq -r ".[$i].description"|xxd -c 1 -p |sed 's/^/\\u00/g'|tr --delete '\n');
-                URL=$(cat out.txt|jq -r ".[$i].ctftime_url");
-                IMG_URL=$(cat out.txt|jq -r ".[$i].logo");
-                START_TIME=$(cat out.txt|jq -r ".[$i].start");
-                curl "$DISCORD_WEBHOOK_URL" -H 'Content-Type: application/json' -d "{\"embeds\": [{\"title\": \"$TITLE\",\"description\": \"$DESCRIPTION\",\"url\": \"$URL\",\"color\": 7419530,\"image\":{\"url\": \"$IMG_URL\"},\"timestamp\": \"$START_TIME\"}]}";
-               done;
+                LENGTH=$(jq length out.txt);
+                LENGTH=$((LENGTH - 1));
+
+                TABLE="| Title | Weight | Start Time | URL | Format |\n|---|---|---|---|---|";
+
+                for i in $(seq 0 $LENGTH); do
+                    TITLE=$(cat out.txt|jq -r ".[$i].title"|xxd -c 1 -p |sed 's/^/\\u00/g'|tr --delete '\n');
+                    START_TIME=$(cat out.txt|jq -r ".[$i].start");
+                    URL=$(cat out.txt|jq -r ".[$i].ctftime_url");
+                    WEIGHT=$(cat out.txt|jq -r ".[$i].weight);
+                    FORMAT=$(cat out.txt|jq -r ".[$i].format);
+
+                    TABLE="$TABLE\n| $TITLE | $WEIGHT | $START_TIME | $URL | $FORMAT";
+                done
+
+                # Send as one message with Markdown table
+                PAYLOAD=$(jq -n --arg content "Here are upcoming CTFs:\n\`\`\`md\n$TABLE\n\`\`\`" '{content: $content}');
+
+                curl "$DISCORD_WEBHOOK_URL" \
+                  -H "Content-Type: application/json" \
+                  -d "$PAYLOAD"
