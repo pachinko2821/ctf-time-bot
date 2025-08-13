@@ -16,14 +16,15 @@ jobs:
                START=$(date -u +%s);
                END=$(date -u +%s -d "+7 days");
                curl -s "https://ctftime.org/api/v1/events/?limit=10&start=$START&end=$END" |jq > out.txt;
-               cat out.txt; 
               shell: bash
 
             - name: send message via discord webhook
               env:
                 DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
               run: |
+               cat out.txt;
                LENGTH=$(cat out.txt|jq length);
+               LENGTH=$(expr $LENGTH - 1);
                for i in $(seq 0 $LENGTH);
                do
                 TITLE=$(cat out.txt|jq -r '.[$i].title');
