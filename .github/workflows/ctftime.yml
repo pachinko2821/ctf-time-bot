@@ -45,7 +45,8 @@ jobs:
 
                 # Send as one message with Markdown table
                 echo -e $TABLE > table.md;
-                npx prettier table.md > formatted.md;
+                sed  -i 's/| |/|\n|/g' table.md
+                prettier table.md > formatted.md;
 
                 cat formatted.md;
 
