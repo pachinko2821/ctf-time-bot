@@ -8,8 +8,10 @@ jobs:
     ctf-time-to-discord:
         runs-on: ubuntu-latest
         steps:
-            - name: install jq
-              run: sudo apt update && sudo apt install jq -y;
+            - name: install dependencies
+              run: |
+                sudo apt update && sudo apt install jq nodejs npm -y;
+                sudo npm install -g prettier;
 
             - name: get info via ctftime api
               run: |
@@ -30,7 +32,8 @@ jobs:
 
                 for i in $(seq 0 $LENGTH); do
                     TITLE=$(cat out.txt|jq -r ".[$i].title");
-                    START_TIME=$(cat out.txt|jq -r ".[$i].start");
+                    START_TIME_RAW=$(cat out.txt|jq -r ".[$i].start")
+                    START_TIME=$(TZ=Asia/Kolkata date -d $START_TIME_RAW +"%d-%m-%Y %H:%M");
                     URL=$(cat out.txt|jq -r ".[$i].ctftime_url");
                     WEIGHT=$(cat out.txt|jq -r ".[$i].weight");
                     FORMAT=$(cat out.txt|jq -r ".[$i].format");
@@ -41,7 +44,11 @@ jobs:
                 done
 
                 # Send as one message with Markdown table
-                echo $TABLE|tee -a table.md;
+                echo $TABLE > table.md;
+                npx prettier table.md > formatted.md;
 
-                curl "$DISCORD_WEBHOOK_URL" \
-                  --data-binary @table.md
+                cat formatted.md;
+
+                curl -X POST "$DISCORD_WEBHOOK_URL" \
+                  -F "payload_json={\"content\": \"Upccoming CTF's this week:\"}"
+                  -F "file[0]=@formatted.md"
