@@ -36,14 +36,12 @@ jobs:
                     FORMAT=$(cat out.txt|jq -r ".[$i].format");
 
                     if [[ $(echo "$WEIGHT > 0" |bc -l) ]]; then
-                      TABLE="$TABLE\n| $TITLE | $WEIGHT | $START_TIME | $URL | $FORMAT";
+                      TABLE="$TABLE\n| $TITLE | $WEIGHT | $START_TIME | $URL | $FORMAT |";
                     fi
                 done
 
                 # Send as one message with Markdown table
-                TABLE=$(echo $TABLE)
-                PAYLOAD=$(jq -n --arg content "\`\`\`\\n$TABLE\`\`\`" '{content: $content}');
+                echo $TABLE|tee -a table.md;
 
                 curl "$DISCORD_WEBHOOK_URL" \
-                  -H "Content-Type: application/json" \
-                  -d "$PAYLOAD"
+                  --data-binary @table.md
