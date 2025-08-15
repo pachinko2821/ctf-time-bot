@@ -28,7 +28,7 @@ jobs:
                 LENGTH=$(jq length out.txt);
                 LENGTH=$((LENGTH - 1));
 
-                TABLE="| Title | Weight | Start Time | URL | Format |\n|---|---|---|---|---|";
+                TABLE=$(echo -e "| Title | Weight | Start Time | URL | Format |\n|---|---|---|---|---|");
 
                 for i in $(seq 0 $LENGTH); do
                     TITLE=$(cat out.txt|jq -r ".[$i].title");
@@ -39,12 +39,12 @@ jobs:
                     FORMAT=$(cat out.txt|jq -r ".[$i].format");
 
                     if [[ $(echo "$WEIGHT > 0" |bc -l) ]]; then
-                      TABLE="$TABLE\n| $TITLE | $WEIGHT | $START_TIME | $URL | $FORMAT |";
+                      TABLE=$(echo -e "$TABLE\n| $TITLE | $WEIGHT | $START_TIME | $URL | $FORMAT |");
                     fi
                 done
 
                 # Send as one message with Markdown table
-                echo $TABLE > table.md;
+                echo -e $TABLE > table.md;
                 npx prettier table.md > formatted.md;
 
                 cat formatted.md;
