@@ -17,7 +17,7 @@ jobs:
               run: |
                START=$(date -u +%s);
                END=$(date -u +%s -d "+7 days");
-               curl -s "https://ctftime.org/api/v1/events/?limit=100&start=$START&end=$END" |jq > out.txt;
+               curl -s "https://ctftime.org/api/v1/events/?limit=10&start=$START&end=$END" |jq > out.txt;
               shell: bash
 
             - name: send message via discord webhook
@@ -48,8 +48,7 @@ jobs:
                 sed  -i 's/| |/|\n|/g' table.md
                 prettier table.md > formatted.md;
 
-                cat formatted.md;
+                data=$(cat formatted.md);
 
                 curl -X POST "$DISCORD_WEBHOOK_URL" \
-                  -F "payload_json={\"content\": \"Upccoming CTF's this week:\"}" \
-                  -F "file[0]=@formatted.md"
+                  -F "payload_json={\"content\": \"Upccoming CTF's this week:\n$data\"}";
