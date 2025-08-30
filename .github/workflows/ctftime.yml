@@ -51,4 +51,4 @@ jobs:
                 data=$(cat formatted.md);
 
                 curl -X POST "$DISCORD_WEBHOOK_URL" \
-                  -F "payload_json={\"content\": \"Upccoming CTF's this week:\n$data\"}";
+                  -F "payload_json={\"content\": \"$data\"}";
