@@ -48,7 +48,7 @@ jobs:
                 sed  -i 's/| |/|\n|/g' table.md
                 prettier table.md > formatted.md;
 
-                data=$(cat formatted.md);
+                data=$(cat formatted.md |iconv -t UTF-16be |xxd -p -c 2 |sed 's/^/\\u/g' |tr --delete '\n');
 
                 curl -X POST "$DISCORD_WEBHOOK_URL" \
                   -F "payload_json={\"content\": \"$data\"}";
