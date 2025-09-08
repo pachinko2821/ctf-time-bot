@@ -25,30 +25,40 @@ jobs:
               env:
                 DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
               run: |
-                LENGTH=$(jq length out.txt);
-                LENGTH=$((LENGTH - 1));
-
-                TABLE=$(echo -e "| Title | Weight | Start Time | URL | Format |\n|---|---|---|---|---|");
+                LENGTH=$(jq length out.txt)
+                LENGTH=$((LENGTH - 1))
+                FIELDS=""
 
                 for i in $(seq 0 $LENGTH); do
-                    TITLE=$(cat out.txt|jq -r ".[$i].title");
-                    START_TIME_RAW=$(cat out.txt|jq -r ".[$i].start")
-                    START_TIME=$(TZ=Asia/Kolkata date -d $START_TIME_RAW +"%d-%m-%Y %H:%M");
-                    URL=$(cat out.txt|jq -r ".[$i].ctftime_url");
-                    WEIGHT=$(cat out.txt|jq -r ".[$i].weight");
-                    FORMAT=$(cat out.txt|jq -r ".[$i].format");
+                    TITLE=$(jq -r ".[$i].title" out.txt)
+                    START_TIME_RAW=$(jq -r ".[$i].start" out.txt)
+                    START_TIME=$(TZ=Asia/Kolkata date -d "$START_TIME_RAW" +"%d-%m-%Y %H:%M")
+                    URL=$(jq -r ".[$i].ctftime_url" out.txt)
+                    WEIGHT=$(jq -r ".[$i].weight" out.txt)
+                    FORMAT=$(jq -r ".[$i].format" out.txt)
 
-                    if [[ $(echo "$WEIGHT > 0" |bc -l) ]]; then
-                      TABLE=$(echo -e "$TABLE\n| $TITLE | $WEIGHT | $START_TIME | $URL | $FORMAT |");
+                    if (( $(echo "$WEIGHT > 0" | bc -l) )); then
+                        VALUE=$(printf "**Weight:** %s\n**Start:** %s\n[Link](%s)\n**Format:** %s" \
+                                     "$WEIGHT" "$START_TIME" "$URL" "$FORMAT")
+
+                        FIELD=$(jq -n \
+                            --arg name "$TITLE" \
+                            --arg value "$VALUE" \
+                            '{name: $name, value: $value, inline: false}')
+
+                        if [ -z "$FIELDS" ]; then
+                            FIELDS="$FIELD"
+                        else
+                            FIELDS="$FIELDS,$FIELD"
+                        fi
                     fi
                 done
 
-                # Send as one message with Markdown table
-                echo -e $TABLE > table.md;
-                sed  -i 's/| |/|\n|/g' table.md
-                prettier table.md > formatted.md;
-
-                data=$(cat formatted.md |iconv -t UTF-16be |xxd -p -c 2 |sed 's/^/\\u/g' |tr --delete '\n');
+                PAYLOAD=$(jq -n \
+                    --arg title "📅 Upcoming CTFs (Next 7 days)" \
+                    --argjson fields "[$FIELDS]" \
+                    '{embeds: [{title: $title, fields: $fields, color: 3447003}]}')
 
                 curl -X POST "$DISCORD_WEBHOOK_URL" \
-                  -F "payload_json={\"content\": \"$data\"}";
+                     -H "Content-Type: application/json" \
+                     -d "$PAYLOAD"
